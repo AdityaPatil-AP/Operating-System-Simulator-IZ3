@@ -1,0 +1,221 @@
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <math.h>
+#include <string.h>
+#include <typeinfo>
+
+using namespace std;
+
+#define EMPTY '*'
+typedef uint8_t byte;
+typedef uint16_t u16;
+typedef size_t ulong;
+bool notTerminate = true;
+int SI = -99;
+
+struct cpu {
+
+    byte m[100][4];
+    byte IR[4];
+    u16 IC;
+    byte R[4];
+    bool C;
+    byte buffer[50];
+};
+
+struct cpu myCPU;
+
+void init()
+{
+    memset(myCPU.buffer, EMPTY, sizeof(myCPU.buffer));
+    memset(myCPU.m, EMPTY, sizeof(myCPU.m));
+    memset(myCPU.IR, EMPTY, sizeof(myCPU.IR));
+    memset(myCPU.R, EMPTY, sizeof(myCPU.R));
+    myCPU.IC = -12;
+    myCPU.C = 0;
+
+    // //print array to check if initialised
+    //      for(int b = 0; b < sizeof(myCPU.R); b++)
+    //      {
+    //        cout << myCPU.R[b] << " ";
+    //      }
+    // cout<<endl<<myCPU.C;
+}
+
+void masterMode(int SI,
+    int address,
+    ifstream* inFile,
+    ofstream* outFile,
+    int infilePos,
+    int outfilePos)
+{
+    // filepts to be returned
+    switch(SI) {
+    case 1:
+	{
+	string aline;
+	std::getline(*inFile, aline);
+	if(address % 10 != 0){
+		return;
+	}
+	memcpy(myCPU.m[address], aline.c_str(), aline.size());
+	
+	string aline;
+	std::getline(*inFile, aline);
+	if(address % 10 != 0) {
+	    return;
+	}
+	memcpy(myCPU.m[address], aline.c_str(), aline.size());
+	// outfilePos = (*outFile).tellg();
+	////infilePos = (*inFile).tellg();
+	////executeUserProgram(myCPU, &inFile, &outFile, infilePos, outfilePos);
+	break;	
+	}
+	
+
+    case 2:
+	{
+	char myline[40];
+	memcpy(myline, myCPU.m[address], 40);
+	cout<<myline<<endl;
+	*outFile << myline << endl;
+	break;	
+	}
+	
+    case 3:
+	{
+	cout << "Halting program." << endl;
+	(*outFile) << endl << endl;
+	notTerminate = false;
+	// call load func
+	break;	
+	}
+	
+    }
+}
+
+void executeUserProgram( ifstream* inFile, ofstream* outFile, int infilePos, int outfilePos)
+{
+    // user Mode
+    while(notTerminate) {
+	memcpy(myCPU.IR, myCPU.m[myCPU.IC], 4);
+	myCPU.IC++;
+
+	int address = (myCPU.IR[2] - '0') * 10 + (myCPU.IR[3] - '0');
+
+	if(myCPU.IR[0] == 'G' && myCPU.IR[1] == 'D') {
+	    //cout << "GD read";
+	    SI = 1;
+	     masterMode(SI, address, inFile, outFile, infilePos, outfilePos);
+	} else if(myCPU.IR[0] == 'P' && myCPU.IR[1] == 'D') {
+	    //cout << "PD read";
+	    SI = 2;
+	     masterMode(SI, address, inFile, outFile, infilePos, outfilePos);
+	} else if(myCPU.IR[0] == 'H') {
+	    //cout << "H read";
+	    SI = 3;
+	     masterMode(SI, address, inFile, outFile, infilePos, outfilePos);
+	} else if(myCPU.IR[0] == 'L' && myCPU.IR[1] == 'R') {
+	    //cout << "LR read";
+	    memcpy(myCPU.R, myCPU.m[address], 4);
+
+	} else if(myCPU.IR[0] == 'S' && myCPU.IR[1] == 'R') {
+	    //cout << "SR read";
+	    memcpy(myCPU.m[address], myCPU.R, 4);
+
+	} else if(myCPU.IR[0] == 'C' && myCPU.IR[1] == 'R') {
+	    //cout << "CR read";
+	    bool equal = true;
+	    for(int i = 0; i < 4; ++i) {
+		if(myCPU.m[address][i] != myCPU.R[i]) {
+		    equal = false;
+		    break;
+		}
+	    }
+	    myCPU.C = equal;
+
+	} else if(myCPU.IR[0] == 'B' && myCPU.IR[1] == 'T') {
+	    //cout << "BT read";
+	    if(myCPU.C) {
+		myCPU.IC = address;
+	    }
+	}
+    }
+}
+
+void startExecution(ifstream* inFile, ofstream* outFile, int infilePos, int outfilePos)
+{
+    myCPU.IC = 0;
+    executeUserProgram(inFile, outFile, infilePos, outfilePos);
+
+}
+
+int main()
+{
+
+    ifstream inFile("input.txt");
+    ofstream outFile("output.txt");
+
+    //struct cpu myCPU;
+
+    string line;
+    bool instructionFlag = true;
+    int mrow = 0;
+
+    // LOAD
+
+    while(getline(inFile, line)) {
+	// cout<<line<<endl;
+
+	// Check if Control Card AMJ
+	if(line.substr(0, 4) == "$AMJ") {
+	    // cout << "AMJ card!" << endl;
+
+	    init();
+	    instructionFlag = true;
+	}
+
+	// Check if Control Card DTA
+	else if(line.substr(0, 4) == "$DTA") {
+	    // cout << "Dtcard!" << endl;
+
+	    int infilePos = inFile.tellg();
+	    int outfilePos = outFile.tellp();
+	    startExecution( &inFile, &outFile, infilePos, outfilePos);
+	    instructionFlag = false;
+	}
+
+	// Check if Control Card END
+	else if(line.substr(0, 4) == "$END") {
+	    //cout << "Endddd plijj" << endl;
+
+	    instructionFlag = false;
+	    // outFile << endl << endl;
+	    init();
+	    break;
+	}
+
+	// Else it's a program card
+	else if(instructionFlag) {
+	    // cout << "Program card finalllyyy!" << endl;
+
+	    if(mrow == 99) {
+		cout << "Memory exceeded! Aborting program...";
+		break; // break outta while loop if memory overflow
+	    } else {
+		// enter the line into buffer
+		memcpy(myCPU.buffer, line.c_str(), line.size());
+		// copy buffer contents to memory
+		memcpy(myCPU.m, myCPU.buffer, sizeof(myCPU.buffer));
+		// update the current row of the memory
+		mrow += ceil(line.size() / 4);
+	    }
+	}
+    }
+
+    inFile.close();
+    outFile.close();
+
+    return 0;
+}
