@@ -66,7 +66,7 @@ The second phase of the Multiprogramming Operating System (MOS) project focuses 
 
 # Phase - 3
 
-## Notable Feature of Phase 3 : 
+## Notable Features : 
 
 ### Scheduling Processes : 
 The primary objective of the third phase is to understand and implement process scheduling in the operating system. It involves managing the execution order of multiple processes and allocating CPU time slices to them. The specific CPU scheduling algorithm chosen for implementation can be customized according to the project requirements.
