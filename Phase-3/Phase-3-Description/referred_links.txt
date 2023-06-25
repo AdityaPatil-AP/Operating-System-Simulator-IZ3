@@ -1,0 +1,3 @@
+https://stackoverflow.com/questions/8408776/queue-of-array-of-characters
+https://www.programiz.com/cpp-programming/strings
+https://en.cppreference.com/w/c/language/typedef

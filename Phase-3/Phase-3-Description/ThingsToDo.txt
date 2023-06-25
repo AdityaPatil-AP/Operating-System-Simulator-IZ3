@@ -1,0 +1,32 @@
+Time Slice Concept implementation doubt.
+
+1) Supervisory Storage - Queues of
+
+- queue of character arrays.
+- queue of vector of chars of size of 40.
+- ebq of size 10 at the start.
+
+2) Auxiliary Storage - 
+
+- 50 blocks of memory.
+
+- 0 - 9 blocks - program cards.
+- 10 - 19 block - data cards.
+- 20 - 29 blocks - ofbq data.
+
+Andy:
+1] Init function
+2] Division of cpu n mmry class
+3] error and hread [continue till next amj in errorprone jobs]
+4] handle aux memory overflow
+
+
+// 1) CPU Status for every process needs to be remembered and stored somewhere so
+// that when new process enters we are able to remember the previous state condition of the CPU.
+
+// 2) Memory Class to be defined separately.
+
+// Was thinking for creating 3 different methods for channels. Like StartChannel1, startChannel2, startChannel3.
+
+
+
