@@ -1,14 +1,14 @@
-## Operating-System-IZ3
+# Operating-System-IZ3
 
 **The MULTIPROGRAMMING OPERATING SYSTEM (MOS)** project consists of three phases aimed at developing an operating system capable of managing multiple processes and executing user assembly programs. Each phase builds upon the previous one, adding new features and improvements. This introduction provides an overview of the work done in all three phases and highlights the enhancements made in the subsequent phases.
 
-# Phase 1:
+### Phase 1:
 The first phase of the MOS project focused on the basic functionalities of process management and memory management. It involved developing mechanisms for process creation, termination, and scheduling. The implementation included a simple memory management scheme to allocate memory blocks to processes. The goal was to establish the foundation for subsequent phases by laying out the fundamental concepts of process management and memory allocation.
 
-# Phase 2:
+### Phase 2:
 In the second phase, the MOS project expanded its capabilities by introducing more advanced memory management techniques. The focus shifted towards implementing a paging system to efficiently manage memory usage. Paging allowed the system to divide programs into fixed-sized pages and allocate them to available memory frames. This approach provided better utilization of memory resources and facilitated the execution of larger programs.
 
-# Phase 3:
+### Phase 3:
 The third phase marked a significant milestone in the MOS project, where the emphasis shifted towards process scheduling and I/O management. The objective was to develop a robust process scheduling mechanism to allocate CPU time slices to multiple processes. The phase also introduced the concept of virtual memory, enabling the system to handle larger programs by utilizing secondary storage devices like the Drum. I/O processing was enhanced through the introduction of spooling, buffering, and multiple I/O channels.
 
 ![image](https://github.com/AdityaPatil-AP/Operating-System-Simulator-IZ3/assets/94468283/bb3d8216-0abe-4ff3-9302-c26ca11145d2)
